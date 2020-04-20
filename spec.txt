@@ -1,0 +1,67 @@
+python application that allows for the determination of correct cable sizes based on input parameters
+ and determined as per AS/NZS3008 1.1 (Australia)*
+
+*note: primary difference between 3008 1.1 (AU) and 3008 1.2 (NZ) is +10degC ambient temperature assumed
+ in 3008 1.1. Using values in 3008 1.1 allows for results to be used in NZ or AU, and provided additional
+ de-rating in NZ locations
+
+INPUTS
+    per circuit:
+        loadKw OR loadAmps
+        cable length (m)
+
+        optional: conductor environment (default: partially surrounded by thermal insulation)
+                partially surrounded by thermal insulation
+                unenclosed, touching
+                buried, direct
+                other arrangements as per 3008 1.1 section 3 (lower priority)
+        optional: ambient temperature (default: 30degC)
+        optional: safety factor (default: 1 @ 30degC)
+        optional: insulation type (default: X90)
+
+    input values will be xlsx table or csv with input values as above in columns, and diffent circuits in rows 
+
+ALGORITHM
+    per circuit:
+        IF loadKw provied, convert to loadAmps
+
+        determine requirements based on current-carrying capacity (AS/NZS3008.1.1:2017 2.2(a))
+            select tables to use based on insulation type
+            apply conductor environment de-rating factor
+            apply ambient temperature de-rating factor
+            apply safety de-rating factor
+
+        determine requirements based on voltage drop (AS/NZS3008.1.1:2017 2.2(b))
+            calculate maximum volt drop permissible based on cable length, loadAmps (Volt drop set to 5% nominal voltage)
+            determine volt drop in mV/Am using AS/NZS3008.1.1:2017 Equation 4.2(1)
+            select min cable not exceeding above value based on appropriate table (Tables 40-51)
+            confirm voltage drop using detailed paramerters based on equation of Claude 4.5*
+
+        determine requirements based on short-circuit temperature limit* (AS/NZS3008.1.1:2017 2.2(c))
+
+        *note: not included in first revision
+
+
+
+OUTPUTS
+    per circuit:
+        list of suitible cable type/sizes. determined by MINVALUE of current/voltDrop/shortCircuit calcs*
+        estimated temperature of each cable**
+
+        *initial revision will spec an example cable of each type/size. Possible expansion in future will
+        allow for different model/manufacturers using catalog data
+        **not availible in first revision
+
+output format:
+    CSV
+    XLSX
+
+    output table will include all input data, plus additional columns for temperature/cable size of each solution for given circuit
+
+
+
+
+
+
+
+
